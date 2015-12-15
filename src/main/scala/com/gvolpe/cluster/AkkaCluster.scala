@@ -8,7 +8,7 @@ import akka.actor.{ActorSystem, Address, Props}
 import akka.cluster.Cluster
 import akka.cluster.sharding.ShardCoordinator.LeastShardAllocationStrategy
 import akka.cluster.sharding.{ClusterSharding, ClusterShardingSettings}
-import com.gvolpe.cluster.actors.EntityActor
+import com.gvolpe.cluster.actors.{TestActor, EntityActor}
 import com.gvolpe.cluster.management.ClusterManagement
 import com.typesafe.config.ConfigFactory
 
@@ -37,6 +37,8 @@ class AkkaCluster(persistentId: String, port: Int) {
     )
 
     registerClusterManagementBean(system)
+
+    system.actorOf(Props[TestActor], "testActor")
 
     system
   }

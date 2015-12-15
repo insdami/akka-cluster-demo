@@ -2,6 +2,7 @@ package com.gvolpe.cluster.actors
 
 import akka.actor.{Terminated, Props, Actor}
 import akka.cluster.Cluster
+import akka.cluster.ClusterEvent._
 import akka.cluster.sharding.{ClusterSharding, ShardRegion}
 import com.gvolpe.cluster.actors.GracefulShutdownActor.LeaveAndShutdownNode
 
@@ -15,6 +16,7 @@ class GracefulShutdownActor extends Actor {
   val cluster = Cluster(context.system)
   val region = ClusterSharding(context.system).shardRegion(EntityActor.shardName)
 
+
   def receive = {
     case LeaveAndShutdownNode =>
       context.watch(region)
@@ -24,6 +26,9 @@ class GracefulShutdownActor extends Actor {
       println(">>>>>>>>>>>> Terminating node")
       cluster.registerOnMemberRemoved(context.system.terminate())
       cluster.leave(cluster.selfAddress)
+
+    case LeaderChanged(address) =>
+      println(s">>>>>>>>>>> Leader Address: $address")
   }
 
 }
